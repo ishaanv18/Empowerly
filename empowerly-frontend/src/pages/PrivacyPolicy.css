@@ -1,0 +1,139 @@
+.privacy-policy-page {
+    min-height: 100vh;
+    padding: 8rem 0 4rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Gradient Orb Particles */
+.privacy-policy-page::before,
+.privacy-policy-page::after {
+    content: '';
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(30px);
+    opacity: 0.7;
+    animation: floatOrb 15s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.privacy-policy-page::before {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(102, 126, 234, 0.8) 0%, transparent 70%);
+    top: 10%;
+    left: -5%;
+}
+
+.privacy-policy-page::after {
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, rgba(118, 75, 162, 0.7) 0%, transparent 70%);
+    bottom: 15%;
+    right: -5%;
+    animation-delay: 7s;
+}
+
+@keyframes floatOrb {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    25% {
+        transform: translate(20px, -20px);
+    }
+
+    50% {
+        transform: translate(-15px, 15px);
+    }
+
+    75% {
+        transform: translate(15px, -10px);
+    }
+}
+
+.privacy-policy-page>* {
+    position: relative;
+    z-index: 1;
+}
+
+.policy-content {
+    max-width: 900px;
+    margin: 0 auto;
+    padding: 4rem;
+}
+
+.policy-title {
+    font-size: 3rem;
+    margin-bottom: 0.5rem;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+    background-clip: text;
+}
+
+.policy-updated {
+    color: var(--text-secondary);
+    margin-bottom: 3rem;
+    font-size: 1.1rem;
+}
+
+.policy-section {
+    margin-bottom: 3rem;
+}
+
+.policy-section h2 {
+    font-size: 1.8rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.policy-section p {
+    color: var(--text-secondary);
+    line-height: 1.8;
+    margin-bottom: 1rem;
+}
+
+.policy-section ul {
+    list-style: none;
+    padding-left: 0;
+}
+
+.policy-section li {
+    color: var(--text-secondary);
+    line-height: 1.8;
+    padding-left: 2rem;
+    position: relative;
+    margin-bottom: 0.5rem;
+}
+
+.policy-section li::before {
+    content: '✓';
+    position: absolute;
+    left: 0;
+    color: var(--primary);
+    font-weight: bold;
+}
+
+.policy-footer {
+    margin-top: 4rem;
+    text-align: center;
+    padding-top: 2rem;
+    border-top: 1px solid var(--border);
+}
+
+@media (max-width: 768px) {
+    .policy-content {
+        padding: 2rem 1.5rem;
+    }
+
+    .policy-title {
+        font-size: 2rem;
+    }
+
+    .policy-section h2 {
+        font-size: 1.5rem;
+    }
+}

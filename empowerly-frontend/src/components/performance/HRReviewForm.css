@@ -1,0 +1,174 @@
+.hr-review-form-container {
+    padding: 2rem;
+    max-width: 1200px;
+    margin: 0 auto;
+}
+
+.form-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    margin-bottom: 2rem;
+}
+
+.form-header h1 {
+    font-size: 2rem;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.employee-info {
+    display: flex;
+    align-items: center;
+    gap: 1.5rem;
+    padding: 1.5rem;
+    background: var(--surface);
+    border-radius: var(--radius-lg);
+    margin-bottom: 2rem;
+}
+
+.employee-info h2 {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin: 0;
+}
+
+.section {
+    background: var(--surface);
+    border-radius: var(--radius-xl);
+    padding: 2rem;
+    margin-bottom: 2rem;
+}
+
+.section h3 {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin: 0 0 1.5rem 0;
+    padding-bottom: 0.75rem;
+    border-bottom: 2px solid var(--border);
+}
+
+.employee-assessment {
+    background: #f0f9ff;
+}
+
+.ratings-display h4,
+.text-section h4 {
+    font-size: 1.125rem;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+}
+
+.ratings-display {
+    margin-bottom: 1.5rem;
+}
+
+.ratings-grid {
+    display: grid;
+    gap: 1rem;
+}
+
+.rating-display-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 0.75rem 1rem;
+    background: white;
+    border-radius: var(--radius-md);
+}
+
+.rating-display-item strong {
+    color: #667eea;
+    font-size: 1.125rem;
+}
+
+.text-section {
+    margin-bottom: 1.5rem;
+    padding: 1rem;
+    background: white;
+    border-radius: var(--radius-md);
+}
+
+.text-section p {
+    margin: 0;
+    line-height: 1.6;
+    color: var(--text-secondary);
+}
+
+.rating-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    background: var(--background);
+    border-radius: var(--radius-md);
+}
+
+.rating-item label {
+    font-weight: 600;
+    color: var(--text-primary);
+}
+
+.final-score-display {
+    text-align: center;
+    padding: 2rem;
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%);
+    border-radius: var(--radius-lg);
+    color: white;
+    margin-top: 2rem;
+}
+
+.final-score-display h4 {
+    font-size: 1.125rem;
+    margin: 0 0 1rem 0;
+}
+
+.score-value {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.score-formula {
+    font-size: 0.875rem;
+    opacity: 0.9;
+    margin: 0;
+}
+
+.form-actions {
+    display: flex;
+    justify-content: flex-end;
+    gap: 1rem;
+    margin-top: 2rem;
+    padding-top: 2rem;
+    border-top: 2px solid var(--border);
+}
+
+.error {
+    text-align: center;
+    padding: 4rem 2rem;
+    color: #ef4444;
+    font-size: 1.125rem;
+}
+
+@media (max-width: 768px) {
+    .hr-review-form-container {
+        padding: 1rem;
+    }
+
+    .form-header {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+
+    .employee-info {
+        flex-direction: column;
+        align-items: flex-start;
+    }
+
+    .rating-item {
+        flex-direction: column;
+        align-items: flex-start;
+        gap: 1rem;
+    }
+}

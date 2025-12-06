@@ -1,0 +1,50 @@
+/* Make stat cards more colorful with individual colors */
+.stat-card:nth-child(1) {
+    background: linear-gradient(135deg, rgba(124, 58, 237, 0.15) 0%, rgba(124, 58, 237, 0.03) 100%) !important;
+    border-left: 4px solid #7c3aed !important;
+}
+
+.stat-card:nth-child(2) {
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.15) 0%, rgba(59, 130, 246, 0.03) 100%) !important;
+    border-left: 4px solid #3b82f6 !important;
+}
+
+.stat-card:nth-child(3) {
+    background: linear-gradient(135deg, rgba(245, 158, 11, 0.15) 0%, rgba(245, 158, 11, 0.03) 100%) !important;
+    border-left: 4px solid #f59e0b !important;
+}
+
+.stat-card:nth-child(4) {
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.15) 0%, rgba(16, 185, 129, 0.03) 100%) !important;
+    border-left: 4px solid #10b981 !important;
+}
+
+/* Fix invisible text in stat cards - Numbers */
+.stat-card .stat-info h3 {
+    -webkit-text-fill-color: #111827 !important;
+    color: #111827 !important;
+    background: none !important;
+    font-weight: 700 !important;
+}
+
+/* Fix invisible text in stat cards - Labels */
+.stat-card .stat-info p {
+    color: #111827 !important;
+    font-weight: 600 !important;
+    opacity: 0.9 !important;
+}
+
+/* Additional specificity for all dashboards */
+.admin-dashboard .stat-card .stat-info p,
+.hr-dashboard .stat-card .stat-info p,
+.employee-dashboard .stat-card .stat-info p {
+    color: #111827 !important;
+    font-weight: 600 !important;
+    opacity: 0.9 !important;
+}
+
+/* Remove emoji from quick actions */
+.quick-actions h3::before {
+    content: '' !important;
+    display: none !important;
+}
