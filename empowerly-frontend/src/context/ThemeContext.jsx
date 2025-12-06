@@ -12,11 +12,11 @@ export const ThemeProvider = ({ children }) => {
             setTheme(storedTheme);
             document.documentElement.setAttribute('data-theme', storedTheme);
         } else {
-            // Check system preference
-            const prefersDark = window.matchMedia('(prefers-color-scheme: dark)').matches;
-            const defaultTheme = prefersDark ? 'dark' : 'light';
+            // Default to light mode for first-time visitors
+            const defaultTheme = 'light';
             setTheme(defaultTheme);
             document.documentElement.setAttribute('data-theme', defaultTheme);
+            localStorage.setItem('theme', defaultTheme);
         }
     }, []);
 
