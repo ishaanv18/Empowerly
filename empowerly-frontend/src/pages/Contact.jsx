@@ -177,7 +177,7 @@ const Contact = () => {
                     >
                         <div className="info-card card">
                             <h3>📧 Email</h3>
-                            <p>sishaan.verma36@gmail.com</p>
+                            <p>ishaan.verma36@gmail.com</p>
                         </div>
 
                         <div className="info-card card">
