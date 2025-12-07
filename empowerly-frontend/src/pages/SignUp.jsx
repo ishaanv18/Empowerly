@@ -122,9 +122,26 @@ const SignUp = () => {
                     from { transform: translateX(400px); opacity: 0; }
                     to { transform: translateX(0); opacity: 1; }
                 }
+                @keyframes slideOut {
+                    from { transform: translateX(0); opacity: 1; }
+                    to { transform: translateX(400px); opacity: 0; }
+                }
             `;
             document.head.appendChild(style);
             document.body.appendChild(notification);
+
+            // Remove notification after 3 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideOut 0.3s ease-out';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                    if (document.head.contains(style)) {
+                        document.head.removeChild(style);
+                    }
+                }, 300);
+            }, 3000);
 
             // Redirect after showing notification
             setTimeout(() => {
