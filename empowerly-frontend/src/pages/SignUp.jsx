@@ -88,7 +88,48 @@ const SignUp = () => {
             });
 
             login(response.data);
-            navigate('/dashboard/employee');
+
+            // Show success notification
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+                color: white;
+                padding: 20px 30px;
+                border-radius: 12px;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+                z-index: 10000;
+                font-family: 'Inter', sans-serif;
+                font-size: 16px;
+                font-weight: 600;
+                animation: slideIn 0.3s ease-out;
+            `;
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 24px;">🎊</span>
+                    <div>
+                        <div style="font-weight: 700; margin-bottom: 4px;">Account Created!</div>
+                        <div style="font-size: 14px; opacity: 0.9;">Welcome to Empowerly, ${formData.name}!</div>
+                    </div>
+                </div>
+            `;
+
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from { transform: translateX(400px); opacity: 0; }
+                    to { transform: translateX(0); opacity: 1; }
+                }
+            `;
+            document.head.appendChild(style);
+            document.body.appendChild(notification);
+
+            // Redirect after showing notification
+            setTimeout(() => {
+                navigate('/dashboard/employee');
+            }, 1500);
         } catch (err) {
             setError(err.response?.data?.error || 'Invalid OTP. Please try again.');
         } finally {
