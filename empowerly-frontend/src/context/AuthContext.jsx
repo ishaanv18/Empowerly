@@ -55,12 +55,17 @@ export const AuthProvider = ({ children }) => {
         localStorage.removeItem('token');
         localStorage.removeItem('user');
 
+        // Clear sessionStorage for complete cleanup
+        sessionStorage.clear();
+
         // Clear timers
         if (inactivityTimerRef.current) {
             clearTimeout(inactivityTimerRef.current);
+            inactivityTimerRef.current = null;
         }
         if (warningTimerRef.current) {
             clearTimeout(warningTimerRef.current);
+            warningTimerRef.current = null;
         }
 
         // Show notification if logged out due to inactivity
@@ -113,10 +118,71 @@ export const AuthProvider = ({ children }) => {
             setTimeout(() => {
                 notification.style.animation = 'slideIn 0.3s ease-out reverse';
                 setTimeout(() => {
-                    document.body.removeChild(notification);
-                    document.head.removeChild(style);
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                    if (document.head.contains(style)) {
+                        document.head.removeChild(style);
+                    }
                 }, 300);
             }, 5000);
+        } else {
+            // Show success notification for manual logout
+            const notification = document.createElement('div');
+            notification.style.cssText = `
+                position: fixed;
+                top: 20px;
+                right: 20px;
+                background: linear-gradient(135deg, #11998e 0%, #38ef7d 100%);
+                color: white;
+                padding: 20px 30px;
+                border-radius: 12px;
+                box-shadow: 0 10px 40px rgba(0,0,0,0.3);
+                z-index: 10000;
+                font-family: 'Inter', sans-serif;
+                font-size: 16px;
+                font-weight: 600;
+                animation: slideIn 0.3s ease-out;
+            `;
+            notification.innerHTML = `
+                <div style="display: flex; align-items: center; gap: 12px;">
+                    <span style="font-size: 24px;">✅</span>
+                    <div>
+                        <div style="font-weight: 700; margin-bottom: 4px;">Logged Out Successfully</div>
+                        <div style="font-size: 14px; opacity: 0.9;">Your session has been ended securely</div>
+                    </div>
+                </div>
+            `;
+
+            // Add animation
+            const style = document.createElement('style');
+            style.textContent = `
+                @keyframes slideIn {
+                    from {
+                        transform: translateX(400px);
+                        opacity: 0;
+                    }
+                    to {
+                        transform: translateX(0);
+                        opacity: 1;
+                    }
+                }
+            `;
+            document.head.appendChild(style);
+            document.body.appendChild(notification);
+
+            // Remove notification after 5 seconds
+            setTimeout(() => {
+                notification.style.animation = 'slideIn 0.3s ease-out reverse';
+                setTimeout(() => {
+                    if (document.body.contains(notification)) {
+                        document.body.removeChild(notification);
+                    }
+                    if (document.head.contains(style)) {
+                        document.head.removeChild(style);
+                    }
+                }, 300);
+            }, 3000);
         }
     }, []);
 
