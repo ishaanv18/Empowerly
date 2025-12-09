@@ -181,7 +181,7 @@ public class MotivationWallService {
 
             java.net.http.HttpRequest request = java.net.http.HttpRequest.newBuilder()
                     .uri(java.net.URI.create(
-                            "https://generativelanguage.googleapis.com/v1beta/models/gemma-3-27b:generateContent?key="
+                            "https://generativelanguage.googleapis.com/v1beta/models/gemini-2.5-flash:generateContent?key="
                                     + getGeminiApiKey()))
                     .header("Content-Type", "application/json")
                     .POST(java.net.http.HttpRequest.BodyPublishers.ofString(requestBody.toString()))
