@@ -32,7 +32,7 @@ public class SkillDevelopmentService {
     @Value("${gemini.api.key}")
     private String geminiApiKey;
 
-    private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash:generateContent";
+    private static final String GEMINI_API_URL = "https://generativelanguage.googleapis.com/v1beta/models/gemma-3-27b:generateContent";
 
     /**
      * Generate personalized skill suggestions using Gemini AI
