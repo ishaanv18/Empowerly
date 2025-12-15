@@ -1280,7 +1280,6 @@ For support, email ishaan.verma36@gmail.com or create an issue on GitHub.
 - **Google** for Gemini AI API
 - **SendGrid** for reliable email delivery
 - **Framer Motion** for beautiful animations
-- **All contributors** who have helped improve this project
 
 ---
 
