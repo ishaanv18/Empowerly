@@ -46,6 +46,14 @@ public class PerformanceReviewController {
         return ResponseEntity.ok(response);
     }
 
+    @PutMapping("/cycles/{id}/reopen")
+    public ResponseEntity<ReviewCycleResponse> reopenCycle(
+            @PathVariable String id,
+            @RequestBody ReopenCycleRequest request) {
+        ReviewCycleResponse response = performanceReviewService.reopenCycle(id, request.getNewEndDate());
+        return ResponseEntity.ok(response);
+    }
+
     @PutMapping("/cycles/{id}/extend")
     public ResponseEntity<ReviewCycleResponse> extendDeadline(
             @PathVariable String id,

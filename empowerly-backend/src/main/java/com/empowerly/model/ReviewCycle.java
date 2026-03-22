@@ -7,6 +7,7 @@ import org.springframework.data.annotation.Id;
 import org.springframework.data.mongodb.core.mapping.Document;
 
 import java.time.LocalDateTime;
+import java.util.List;
 
 @Data
 @NoArgsConstructor
@@ -23,10 +24,19 @@ public class ReviewCycle {
     private String createdBy; // HR userId
     private LocalDateTime createdAt;
 
+    // Scope: ALL = everyone, SPECIFIC = only targetEmployeeIds
+    private TargetScope targetScope = TargetScope.ALL;
+    private List<String> targetEmployeeIds; // used when targetScope = SPECIFIC
+
     public enum CycleStatus {
         DRAFT,
         ACTIVE,
         CLOSED
+    }
+
+    public enum TargetScope {
+        ALL,
+        SPECIFIC
     }
 
     public ReviewCycle(String name, LocalDateTime startDate, LocalDateTime endDate, String createdBy) {
@@ -36,5 +46,6 @@ public class ReviewCycle {
         this.status = CycleStatus.DRAFT;
         this.createdBy = createdBy;
         this.createdAt = LocalDateTime.now();
+        this.targetScope = TargetScope.ALL;
     }
 }

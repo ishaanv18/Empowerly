@@ -138,6 +138,8 @@ export const performanceReviewAPI = {
     closeCycle: (id) => api.put(`/reviews/cycles/${id}/close`),
     extendDeadline: (id, minutes = 30) => api.put(`/reviews/cycles/${id}/extend?minutes=${minutes}`),
     deleteCycle: (id) => api.delete(`/reviews/cycles/${id}`),
+    reopenCycle: (id, newEndDate) => api.put(`/reviews/cycles/${id}/reopen`, { newEndDate }),
+    getEmployees: () => api.get('/users'),
     fixData: () => api.post('/reviews/fix-data'),
 
     // Employee

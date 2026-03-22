@@ -26,16 +26,33 @@ public class PerformanceReviewService {
     // ==================== CYCLE MANAGEMENT (HR ONLY) ====================
 
     public ReviewCycleResponse createCycle(CreateReviewCycleRequest request, String hrUserId) {
+        // Determine scope
+        ReviewCycle.TargetScope scope = "SPECIFIC".equalsIgnoreCase(request.getTargetScope())
+                ? ReviewCycle.TargetScope.SPECIFIC
+                : ReviewCycle.TargetScope.ALL;
+
         ReviewCycle cycle = new ReviewCycle(
                 request.getName(),
                 request.getStartDate(),
                 request.getEndDate(),
                 hrUserId);
+        cycle.setTargetScope(scope);
+
+        // Determine which employees get a review record
+        List<User> targetUsers;
+        if (scope == ReviewCycle.TargetScope.SPECIFIC
+                && request.getTargetEmployeeIds() != null
+                && !request.getTargetEmployeeIds().isEmpty()) {
+            cycle.setTargetEmployeeIds(request.getTargetEmployeeIds());
+            targetUsers = userRepository.findAllById(request.getTargetEmployeeIds());
+        } else {
+            targetUsers = userRepository.findAll();
+        }
+
         cycle = reviewCycleRepository.save(cycle);
 
-        // Create pending reviews for all users (EMPLOYEE, HR, ADMIN)
-        List<User> allUsers = userRepository.findAll();
-        for (User user : allUsers) {
+        // Create pending reviews only for the target employees
+        for (User user : targetUsers) {
             PerformanceReview review = new PerformanceReview();
             review.setEmployeeId(user.getId());
             review.setCycleId(cycle.getId());
@@ -49,8 +66,8 @@ public class PerformanceReviewService {
                 "CYCLE_CREATE",
                 "REVIEW_CYCLE",
                 cycle.getId(),
-                "Performance review cycle created: " + cycle.getName(),
-                Map.of("startDate", cycle.getStartDate().toString(), "endDate", cycle.getEndDate().toString()),
+                "Performance review cycle created: " + cycle.getName() + " (scope: " + scope + ", employees: " + targetUsers.size() + ")",
+                Map.of("startDate", cycle.getStartDate().toString(), "endDate", cycle.getEndDate().toString(), "scope", scope.toString()),
                 null,
                 null);
 
@@ -96,6 +113,31 @@ public class PerformanceReviewService {
                 cycle.getId(),
                 "Performance review cycle closed: " + cycle.getName(),
                 null,
+                null,
+                null);
+
+        return convertCycleToResponse(cycle);
+    }
+
+    public ReviewCycleResponse reopenCycle(String cycleId, LocalDateTime newEndDate) {
+        ReviewCycle cycle = reviewCycleRepository.findById(cycleId)
+                .orElseThrow(() -> new RuntimeException("Cycle not found"));
+
+        if (cycle.getStatus() != ReviewCycle.CycleStatus.CLOSED) {
+            throw new RuntimeException("Only CLOSED cycles can be reopened");
+        }
+
+        cycle.setStatus(ReviewCycle.CycleStatus.ACTIVE);
+        cycle.setEndDate(newEndDate);
+        cycle = reviewCycleRepository.save(cycle);
+
+        auditLogService.logAction(
+                "HR",
+                "CYCLE_REOPEN",
+                "REVIEW_CYCLE",
+                cycle.getId(),
+                "Performance review cycle reopened: " + cycle.getName(),
+                Map.of("newEndDate", newEndDate.toString()),
                 null,
                 null);
 
