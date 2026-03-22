@@ -73,12 +73,7 @@
             <optional>true</optional>
         </dependency>
         
-        <!-- Brevo (Sendinblue) Transactional Email -->
-        <dependency>
-            <groupId>com.sendinblue</groupId>
-            <artifactId>sib-api-v3-sdk</artifactId>
-            <version>7.0.0</version>
-        </dependency>
+
         
         <!-- WebClient for Gemini API -->
         <dependency>
