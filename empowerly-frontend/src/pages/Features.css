@@ -1,0 +1,138 @@
+.features-page {
+    min-height: 100vh;
+    padding: 8rem 0 4rem;
+    position: relative;
+    overflow: hidden;
+}
+
+/* Gradient Orb Particles */
+.features-page::before,
+.features-page::after {
+    content: '';
+    position: fixed;
+    border-radius: 50%;
+    filter: blur(30px);
+    opacity: 0.7;
+    animation: floatOrb 15s ease-in-out infinite;
+    pointer-events: none;
+}
+
+.features-page::before {
+    width: 400px;
+    height: 400px;
+    background: radial-gradient(circle, rgba(138, 43, 226, 0.8) 0%, transparent 70%);
+    top: 10%;
+    left: -5%;
+}
+
+.features-page::after {
+    width: 350px;
+    height: 350px;
+    background: radial-gradient(circle, rgba(72, 118, 255, 0.7) 0%, transparent 70%);
+    bottom: 15%;
+    right: -5%;
+    animation-delay: 7s;
+}
+
+@keyframes floatOrb {
+
+    0%,
+    100% {
+        transform: translate(0, 0);
+    }
+
+    25% {
+        transform: translate(20px, -20px);
+    }
+
+    50% {
+        transform: translate(-15px, 15px);
+    }
+
+    75% {
+        transform: translate(15px, -10px);
+    }
+}
+
+.features-page>* {
+    position: relative;
+    z-index: 1;
+}
+
+.features-hero {
+    text-align: center;
+    margin-bottom: 5rem;
+}
+
+.features-title {
+    font-size: 3rem;
+    margin-bottom: 1.5rem;
+}
+
+.features-description {
+    font-size: 1.25rem;
+    color: var(--text-secondary);
+    max-width: 700px;
+    margin: 0 auto;
+}
+
+.features-list {
+    display: flex;
+    flex-direction: column;
+    gap: 2rem;
+}
+
+.feature-item {
+    display: flex;
+    gap: 2rem;
+    padding: 2.5rem;
+    align-items: flex-start;
+}
+
+.feature-icon-large {
+    font-size: 4rem;
+    flex-shrink: 0;
+}
+
+.feature-content {
+    flex: 1;
+}
+
+.feature-item-title {
+    font-size: 1.75rem;
+    margin-bottom: 1rem;
+    color: var(--text-primary);
+}
+
+.feature-item-description {
+    color: var(--text-secondary);
+    margin-bottom: 1.5rem;
+    line-height: 1.7;
+}
+
+.feature-benefits {
+    list-style: none;
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 0.75rem;
+}
+
+.feature-benefits li {
+    color: var(--text-secondary);
+    padding: 0.5rem 0;
+}
+
+@media (max-width: 768px) {
+    .features-title {
+        font-size: 2rem;
+    }
+
+    .feature-item {
+        flex-direction: column;
+        text-align: center;
+    }
+
+    .feature-benefits {
+        grid-template-columns: 1fr;
+    }
+}

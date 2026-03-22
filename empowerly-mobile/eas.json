@@ -1,0 +1,25 @@
+{
+    "cli": {
+        "version": ">= 5.9.0"
+    },
+    "build": {
+        "preview": {
+            "distribution": "internal",
+            "android": {
+                "buildType": "apk",
+                "gradleCommand": ":app:assembleRelease"
+            },
+            "ios": {
+                "simulator": false
+            }
+        },
+        "production": {
+            "android": {
+                "buildType": "apk"
+            }
+        }
+    },
+    "submit": {
+        "production": {}
+    }
+}

@@ -1,0 +1,17 @@
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+import { useAuth } from '../../context/AuthContext';
+import { useNavigate } from 'react-router-dom';
+import { attendanceAPI, leaveAPI, chatAPI, adminAPI } from '../../services/api';
+import Chat from '../../components/chat/Chat';
+import Meetings from '../../components/meetings/Meetings';
+import AdminNavigation from '../../components/navigation/AdminNavigation';
+import ApplyForReview from '../../components/performance/ApplyForReview';
+import ViewMyReviews from '../../components/performance/ViewMyReviews';
+import AdminPayrollApproval from '../../components/payroll/AdminPayrollApproval';
+import SalaryStructureManager from '../../components/payroll/SalaryStructureManager';
+import EmployeePayslips from '../../components/payroll/EmployeePayslips';
+import AdminUserManagement from '../../components/users/AdminUserManagement';
+import SystemSettings from '../../components/settings/SystemSettings';
+import './Dashboard.css';
+import './AdminDashboard.css';

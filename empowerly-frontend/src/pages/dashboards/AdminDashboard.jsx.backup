@@ -1,0 +1,538 @@
+import React, { useState, useEffect } from 'react';
+import { motion, AnimatePresence } from 'framer-motion';
+totalUsers: 0,
+    totalEmployees: 0,
+        totalHR: 0,
+            totalAdmins: 0,
+                activeToday: 0,
+                    pendingLeaves: 0
+});
+
+// Personal attendance state
+const [attendanceStatus, setAttendanceStatus] = useState('CHECKED_OUT');
+const [todayAttendance, setTodayAttendance] = useState(null);
+const [myAttendanceHistory, setMyAttendanceHistory] = useState([]);
+const [myLeaves, setMyLeaves] = useState([]);
+const [loading, setLoading] = useState(false);
+
+useEffect(() => {
+    if (user?.role === 'ADMIN') {
+        fetchAdminData();
+        fetchMyAttendance();
+        fetchMyLeaves();
+        fetchChatUnreadCount();
+    }
+}, [user]);
+
+useEffect(() => {
+    if (activeTab === 'attendance-history') {
+        fetchAllEmployeesAttendance();
+    } else if (activeTab === 'leave-history') {
+        fetchAllLeaves();
+    }
+}, [activeTab]);
+
+const fetchAdminData = async () => {
+    try {
+        // Fetch real system statistics from backend
+        const response = await adminAPI.getStats();
+        setSystemStats({
+            totalUsers: response.data.totalUsers,
+            totalEmployees: response.data.totalEmployees,
+            totalHR: response.data.totalHR,
+            totalAdmins: response.data.totalAdmins,
+            activeToday: response.data.activeToday,
+            pendingLeaves: 0 // This can be added later if needed
+        });
+    } catch (error) {
+        console.error('Error fetching admin data:', error);
+        // Keep default values on error
+        setSystemStats({
+            totalUsers: 0,
+            totalEmployees: 0,
+            totalHR: 0,
+            totalAdmins: 0,
+            activeToday: 0,
+            pendingLeaves: 0
+        });
+    }
+};
+
+const fetchMyAttendance = async () => {
+    try {
+        const [todayResponse, historyResponse] = await Promise.all([
+            attendanceAPI.getTodayAttendance(),
+            attendanceAPI.getMyAttendance()
+        ]);
+
+        if (todayResponse.data) {
+            setTodayAttendance(todayResponse.data);
+            setAttendanceStatus(todayResponse.data.status);
+        }
+
+        setMyAttendanceHistory(historyResponse.data || []);
+    } catch (error) {
+        console.error('Error fetching my attendance:', error);
+    }
+};
+
+const fetchMyLeaves = async () => {
+    try {
+        const response = await leaveAPI.getMyLeaves();
+        setMyLeaves(response.data || []);
+    } catch (error) {
+        console.error('Error fetching my leaves:', error);
+    }
+};
+
+const fetchChatUnreadCount = async () => {
+    try {
+        const response = await chatAPI.getUnreadCount();
+        setChatUnreadCount(response.data.count);
+    } catch (error) {
+        console.error('Error fetching unread count:', error);
+    }
+};
+
+const fetchAllEmployeesAttendance = async () => {
+    try {
+        const response = await attendanceAPI.getAllAttendance();
+        setAllEmployeesAttendance(response.data || []);
+    } catch (error) {
+        console.error('Error fetching all employees attendance:', error);
+    }
+};
+
+const fetchAllLeaves = async () => {
+    try {
+        const response = await leaveAPI.getAll();
+        setAllLeaves(response.data || []);
+    } catch (error) {
+        console.error('Error fetching all leaves:', error);
+    }
+};
+
+const handleCheckIn = async () => {
+    try {
+        setLoading(true);
+        await attendanceAPI.checkIn();
+        await fetchMyAttendance();
+        alert('Successfully checked in!');
+    } catch (error) {
+        const errorMessage = error.response?.data?.error || 'Failed to check in';
+        alert(errorMessage);
+    } finally {
+        setLoading(false);
+    }
+};
+
+const handleCheckOut = async () => {
+    try {
+        setLoading(true);
+        await attendanceAPI.checkOut();
+        await fetchMyAttendance();
+        alert('Successfully checked out!');
+    } catch (error) {
+        const errorMessage = error.response?.data?.error || 'Failed to check out';
+        alert(errorMessage);
+    } finally {
+        setLoading(false);
+    }
+};
+
+const renderOverview = () => (
+    <div className="overview-content">
+        <h2>System Overview</h2>
+        <div className="stats-grid">
+            <motion.div className="stat-card card" whileHover={{ scale: 1.02 }}>
+                <div className="stat-icon">👥</div>
+                <div className="stat-info">
+                    <h3>{systemStats.totalUsers}</h3>
+                    <p>Total Users</p>
+                </div>
+            </motion.div>
+
+            <motion.div className="stat-card card" whileHover={{ scale: 1.02 }}>
+                <div className="stat-icon">💼</div>
+                <div className="stat-info">
+                    <h3>{systemStats.totalEmployees}</h3>
+                    <p>Employees</p>
+                </div>
+            </motion.div>
+
+            <motion.div className="stat-card card" whileHover={{ scale: 1.02 }}>
+                <div className="stat-icon">👨‍💼</div>
+                <div className="stat-info">
+                    <h3>{systemStats.totalHR}</h3>
+                    <p>HR Personnel</p>
+                </div>
+            </motion.div>
+
+            <motion.div className="stat-card card" whileHover={{ scale: 1.02 }}>
+                <div className="stat-icon">⚡</div>
+                <div className="stat-info">
+                    <h3>{systemStats.activeToday}</h3>
+                    <p>Active Today</p>
+                </div>
+            </motion.div>
+        </div>
+
+        <div className="quick-actions">
+            <h3>Quick Actions</h3>
+            <div className="action-buttons">
+                <button className="btn btn-primary" onClick={() => setActiveTab('user-management')}>
+                    👥 Manage Users
+                </button>
+                <button className="btn btn-primary" onClick={() => setActiveTab('attendance-history')}>
+                    📊 View Attendance
+                </button>
+                <button className="btn btn-primary" onClick={() => setActiveTab('leave-history')}>
+                    📋 View Leaves
+                </button>
+                <button className="btn btn-primary" onClick={() => setActiveTab('analytics')}>
+                    📈 Analytics
+                </button>
+            </div>
+        </div>
+    </div>
+);
+
+const renderAttendance = () => (
+    <div className="attendance-content">
+        <div className="my-attendance-section">
+            <div className="attendance-header">
+                <h2>My Attendance</h2>
+                <div className="attendance-status">
+                    <span className={`status-badge ${attendanceStatus.toLowerCase()}`}>
+                        {attendanceStatus.replace('_', ' ')}
+                    </span>
+                </div>
+            </div>
+
+            <div className="attendance-actions" style={{ marginBottom: '2rem' }}>
+                {attendanceStatus === 'CHECKED_OUT' && (
+                    <button className="btn-primary" onClick={handleCheckIn} disabled={loading}>
+                        ⏰ Check In
+                    </button>
+                )}
+                {attendanceStatus === 'CHECKED_IN' && (
+                    <button className="btn-secondary" onClick={handleCheckOut} disabled={loading}>
+                        🏁 Check Out
+                    </button>
+                )}
+            </div>
+
+            <div className="attendance-history">
+                <h3>My Attendance History</h3>
+                <div className="history-list">
+                    {myAttendanceHistory.length === 0 ? (
+                        <p style={{ textAlign: 'center', color: 'var(--text-secondary)', padding: '2rem' }}>
+                            No attendance records found
+                        </p>
+                    ) : (
+                        myAttendanceHistory.slice(0, 5).map((record) => {
+                            const calculateDuration = () => {
+                                if (record.checkInTime && record.checkOutTime) {
+                                    const checkIn = new Date(record.checkInTime);
+                                    const checkOut = new Date(record.checkOutTime);
+                                    const diffMs = checkOut - checkIn;
+                                    const hours = Math.floor(diffMs / (1000 * 60 * 60));
+                                    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                                    return `${hours}h ${minutes}m`;
+                                }
+                                return 'In Progress';
+                            };
+
+                            return (
+                                <div key={record.id} className="history-item">
+                                    <div className="history-date">
+                                        {new Date(record.date).toLocaleDateString('en-US', {
+                                            weekday: 'short',
+                                            month: 'short',
+                                            day: 'numeric',
+                                            year: 'numeric'
+                                        })}
+                                    </div>
+                                    <div className="history-times">
+                                        <span>⏰ In: {record.checkInTime ? new Date(record.checkInTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : 'N/A'}</span>
+                                        <span>🏁 Out: {record.checkOutTime ? new Date(record.checkOutTime).toLocaleTimeString('en-US', { hour: '2-digit', minute: '2-digit' }) : 'N/A'}</span>
+                                    </div>
+                                    <div className="history-duration">
+                                        <div className="duration-value">{calculateDuration()}</div>
+                                        <div className="duration-label">Duration</div>
+                                    </div>
+                                    <div className="history-status">{record.status}</div>
+                                </div>
+                            );
+                        })
+                    )}
+                </div>
+            </div>
+        </div>
+    </div>
+);
+
+const renderLeaves = () => (
+    <div className="leaves-content">
+        <h2>My Leave Requests</h2>
+        <div className="leave-requests">
+            {myLeaves.length === 0 ? (
+                <p style={{ textAlign: 'center', padding: '2rem', color: '#666' }}>
+                    No leave requests found
+                </p>
+            ) : (
+                myLeaves.map((leave) => (
+                    <div key={leave.id} className="leave-card card">
+                        <div className="leave-header">
+                            <span className={`badge ${leave.status === 'APPROVED' ? 'badge-success' : leave.status === 'REJECTED' ? 'badge-error' : 'badge-warning'}`}>
+                                {leave.status}
+                            </span>
+                            <span className="leave-type">{leave.leaveType}</span>
+                        </div>
+                        <div className="leave-details">
+                            <p><strong>From:</strong> {new Date(leave.startDate).toLocaleDateString()}</p>
+                            <p><strong>To:</strong> {new Date(leave.endDate).toLocaleDateString()}</p>
+                            <p><strong>Days:</strong> {leave.numberOfDays}</p>
+                            <p><strong>Reason:</strong> {leave.reason}</p>
+                            {leave.hrRemarks && <p><strong>HR Remarks:</strong> {leave.hrRemarks}</p>}
+                        </div>
+                    </div>
+                ))
+            )}
+        </div>
+    </div>
+);
+
+const renderAttendanceHistory = () => (
+    <div className="attendance-history-content">
+        <h2>All Employees Attendance Records</h2>
+        <div className="attendance-table card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Employee Name</th>
+                        <th>Department</th>
+                        <th>Date</th>
+                        <th>Status</th>
+                        <th>Check-in Time</th>
+                        <th>Check-out Time</th>
+                        <th>Duration</th>
+                        <th>Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {allEmployeesAttendance.length === 0 ? (
+                        <tr>
+                            <td colSpan="8" style={{ textAlign: 'center', padding: '2rem', color: '#666' }}>
+                                No attendance records found
+                            </td>
+                        </tr>
+                    ) : (
+                        allEmployeesAttendance.map((record, index) => {
+                            const calculateDuration = () => {
+                                if (record.checkInTime && record.checkOutTime) {
+                                    const checkIn = new Date(record.checkInTime);
+                                    const checkOut = new Date(record.checkOutTime);
+                                    const diffMs = checkOut - checkIn;
+                                    const hours = Math.floor(diffMs / (1000 * 60 * 60));
+                                    const minutes = Math.floor((diffMs % (1000 * 60 * 60)) / (1000 * 60));
+                                    return `${hours}h ${minutes}m`;
+                                }
+                                return '-';
+                            };
+
+                            return (
+                                <tr key={index}>
+                                    <td>{record.userName || 'N/A'}</td>
+                                    <td>{record.department || 'N/A'}</td>
+                                    <td>{record.date ? new Date(record.date).toLocaleDateString() : '-'}</td>
+                                    <td>
+                                        <span className={`badge ${record.status === 'CHECKED_IN' ? 'badge-success' : 'badge-error'}`}>
+                                            {record.status}
+                                        </span>
+                                    </td>
+                                    <td>{record.checkInTime ? new Date(record.checkInTime).toLocaleTimeString() : '-'}</td>
+                                    <td>{record.checkOutTime ? new Date(record.checkOutTime).toLocaleTimeString() : '-'}</td>
+                                    <td>{calculateDuration()}</td>
+                                    <td style={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                        {record.remarks || '-'}
+                                    </td>
+                                </tr>
+                            );
+                        })
+                    )}
+                </tbody>
+            </table>
+        </div>
+    </div>
+);
+
+const renderLeaveHistory = () => (
+    <div className="leave-history-content">
+        <h2>All Employees Leave Records</h2>
+        <div className="leave-table card">
+            <table>
+                <thead>
+                    <tr>
+                        <th>Employee</th>
+                        <th>Department</th>
+                        <th>Leave Type</th>
+                        <th>Start Date</th>
+                        <th>End Date</th>
+                        <th>Days</th>
+                        <th>Status</th>
+                        <th>Reason</th>
+                        <th>HR Remarks</th>
+                    </tr>
+                </thead>
+                <tbody>
+                    {allLeaves.length === 0 ? (
+                        <tr>
+                            <td colSpan="9" style={{ textAlign: 'center', padding: '2rem', color: '#666' }}>
+                                No leave records found
+                            </td>
+                        </tr>
+                    ) : (
+                        allLeaves.map((leave) => {
+                            const calculateDays = () => {
+                                if (leave.startDate && leave.endDate) {
+                                    const start = new Date(leave.startDate);
+                                    const end = new Date(leave.endDate);
+                                    const diffTime = Math.abs(end - start);
+                                    const diffDays = Math.ceil(diffTime / (1000 * 60 * 60 * 24)) + 1;
+                                    return diffDays;
+                                }
+                                return '-';
+                            };
+
+                            const getStatusBadgeClass = (status) => {
+                                switch (status) {
+                                    case 'APPROVED':
+                                        return 'badge-success';
+                                    case 'REJECTED':
+                                        return 'badge-error';
+                                    case 'PENDING':
+                                        return 'badge-warning';
+                                    default:
+                                        return '';
+                                }
+                            };
+
+                            return (
+                                <tr key={leave.id}>
+                                    <td>{leave.userName || 'N/A'}</td>
+                                    <td>{leave.department || 'N/A'}</td>
+                                    <td>{leave.leaveType || 'N/A'}</td>
+                                    <td>{leave.startDate ? new Date(leave.startDate).toLocaleDateString() : '-'}</td>
+                                    <td>{leave.endDate ? new Date(leave.endDate).toLocaleDateString() : '-'}</td>
+                                    <td>{calculateDays()}</td>
+                                    <td>
+                                        <span className={`badge ${getStatusBadgeClass(leave.status)}`}>
+                                            {leave.status}
+                                        </span>
+                                    </td>
+                                    <td style={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                        {leave.reason || '-'}
+                                    </td>
+                                    <td style={{ maxWidth: '200px', overflow: 'hidden', textOverflow: 'ellipsis', whiteSpace: 'nowrap' }}>
+                                        {leave.hrRemarks || '-'}
+                                    </td>
+                                </tr>
+                            );
+                        })
+                    )}
+                </tbody>
+            </table>
+        </div>
+    </div>
+);
+
+const renderUserManagement = () => (
+    <div className="user-management-content">
+        <h2>User Management</h2>
+        <p style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>
+            User management interface coming soon...
+        </p>
+    </div>
+);
+
+const renderSystemSettings = () => (
+    <div className="system-settings-content">
+        <h2>System Settings</h2>
+        <p style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>
+            System settings interface coming soon...
+        </p>
+    </div>
+);
+
+const renderAnalytics = () => (
+    <div className="analytics-content">
+        <h2>Analytics Dashboard</h2>
+        <p style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>
+            Analytics dashboard coming soon...
+        </p>
+    </div>
+);
+
+const renderReports = () => (
+    <div className="reports-content">
+        <h2>Generate Reports</h2>
+        <p style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>
+            Report generation interface coming soon...
+        </p>
+    </div>
+);
+
+const renderAuditLogs = () => (
+    <div className="audit-logs-content">
+        <h2>Audit Logs</h2>
+        <p style={{ textAlign: 'center', padding: '3rem', color: '#666' }}>
+            Audit logs viewer coming soon...
+        </p>
+    </div>
+);
+
+return (
+    <div className="dashboard-container admin-dashboard">
+        <AdminNavigation
+            activeTab={activeTab}
+            setActiveTab={setActiveTab}
+            chatUnreadCount={chatUnreadCount}
+        />
+
+        {/* Main Content */}
+        <div className="dashboard-main">
+            <div className="dashboard-header">
+                <div>
+                    <h1 className="dashboard-title">Welcome back, {user?.name}!</h1>
+                    <p className="dashboard-subtitle">ADMIN • {new Date().toLocaleDateString('en-US', { weekday: 'long', year: 'numeric', month: 'long', day: 'numeric' })}</p>
+                </div>
+            </div>
+
+            <div className="dashboard-content">
+                <AnimatePresence mode="wait">
+                    {activeTab === 'overview' && renderOverview()}
+                    {activeTab === 'attendance' && renderAttendance()}
+                    {activeTab === 'leaves' && renderLeaves()}
+                    {activeTab === 'apply-review' && <ApplyForReview />}
+                    {activeTab === 'my-reviews' && <ViewMyReviews />}
+                    {activeTab === 'approve-payroll' && <AdminPayrollApproval />}
+                    {activeTab === 'salary-structures' && <SalaryStructureManager />}
+                    {activeTab === 'my-payslips' && <EmployeePayslips />}
+                    {activeTab === 'attendance-history' && renderAttendanceHistory()}
+                    {activeTab === 'leave-history' && renderLeaveHistory()}
+                    {activeTab === 'user-management' && <AdminUserManagement />}
+                    {activeTab === 'system-settings' && renderSystemSettings()}
+                    {activeTab === 'analytics' && renderAnalytics()}
+                    {activeTab === 'reports' && renderReports()}
+                    {activeTab === 'audit-logs' && renderAuditLogs()}
+                    {activeTab === 'chat' && <Chat />}
+                    {activeTab === 'meetings' && <Meetings />}
+                </AnimatePresence>
+            </div>
+        </div>
+    </div>
+);
+};
+
+export default AdminDashboard;

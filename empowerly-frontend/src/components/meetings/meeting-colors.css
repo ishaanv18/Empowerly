@@ -1,0 +1,54 @@
+/* Enhanced Meeting Cards with Colorful Styling */
+.meeting-card {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95) 0%, rgba(249, 250, 251, 0.95) 100%) !important;
+    border: 1px solid rgba(124, 58, 237, 0.1) !important;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08) !important;
+    border-left: 4px solid #7c3aed !important;
+    transition: all 0.3s ease !important;
+}
+
+.meeting-card:hover {
+    transform: translateY(-5px) !important;
+    box-shadow: 0 12px 24px rgba(124, 58, 237, 0.15) !important;
+}
+
+/* Status-based coloring */
+.meeting-card:has(.status-in_progress) {
+    border-left-color: #10b981 !important;
+    background: linear-gradient(135deg, rgba(16, 185, 129, 0.08) 0%, rgba(16, 185, 129, 0.02) 100%) !important;
+}
+
+.meeting-card:has(.status-ended) {
+    border-left-color: #6b7280 !important;
+    background: linear-gradient(135deg, rgba(107, 114, 128, 0.08) 0%, rgba(107, 114, 128, 0.02) 100%) !important;
+}
+
+.meeting-card:has(.status-scheduled) {
+    border-left-color: #3b82f6 !important;
+    background: linear-gradient(135deg, rgba(59, 130, 246, 0.08) 0%, rgba(59, 130, 246, 0.02) 100%) !important;
+}
+
+/* Enhanced status badges */
+.meeting-status {
+    padding: 0.5rem 1rem !important;
+    border-radius: 9999px !important;
+    font-weight: 600 !important;
+    font-size: 0.75rem !important;
+    text-transform: uppercase !important;
+    letter-spacing: 0.5px !important;
+}
+
+.status-in_progress {
+    background: linear-gradient(135deg, #10b981 0%, #059669 100%) !important;
+    color: white !important;
+}
+
+.status-ended {
+    background: linear-gradient(135deg, #6b7280 0%, #4b5563 100%) !important;
+    color: white !important;
+}
+
+.status-scheduled {
+    background: linear-gradient(135deg, #3b82f6 0%, #2563eb 100%) !important;
+    color: white !important;
+}

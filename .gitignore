@@ -1,0 +1,31 @@
+# Environment variables - NEVER commit these
+.env
+*.env
+.env.local
+.env.production
+
+# Java / Maven
+empowerly-backend/target/
+*.class
+*.jar
+
+# Node / React
+node_modules/
+dist/
+.next/
+empowerly-frontend/node_modules/
+empowerly-frontend/dist/
+
+# React Native / Expo
+empowerly-mobile/node_modules/
+empowerly-mobile/.expo/
+empowerly-mobile/.expo-shared/
+empowerly-mobile/android/
+empowerly-mobile/ios/
+
+# IDEs
+.idea/
+*.iml
+.vscode/
+.DS_Store
+Thumbs.db

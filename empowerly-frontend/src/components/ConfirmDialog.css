@@ -1,0 +1,112 @@
+.confirm-dialog-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.5);
+    backdrop-filter: blur(4px);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 10000;
+    animation: fadeIn 0.2s ease-out;
+}
+
+.confirm-dialog {
+    background: linear-gradient(135deg, rgba(255, 255, 255, 0.95), rgba(255, 255, 255, 0.98));
+    border-radius: 16px;
+    box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+    max-width: 450px;
+    width: 90%;
+    overflow: hidden;
+    animation: slideUp 0.3s ease-out;
+}
+
+.confirm-dialog-header {
+    padding: 24px 24px 16px;
+    border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+}
+
+.confirm-dialog-header h3 {
+    margin: 0;
+    font-size: 20px;
+    font-weight: 600;
+    color: #1f2937;
+}
+
+.confirm-dialog-body {
+    padding: 24px;
+}
+
+.confirm-dialog-body p {
+    margin: 0;
+    font-size: 15px;
+    line-height: 1.6;
+    color: #4b5563;
+}
+
+.confirm-dialog-footer {
+    padding: 16px 24px 24px;
+    display: flex;
+    gap: 12px;
+    justify-content: flex-end;
+}
+
+.confirm-dialog-footer button {
+    padding: 10px 24px;
+    border-radius: 8px;
+    font-size: 14px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    border: none;
+}
+
+.btn-cancel {
+    background: rgba(0, 0, 0, 0.05);
+    color: #4b5563;
+}
+
+.btn-cancel:hover {
+    background: rgba(0, 0, 0, 0.1);
+}
+
+.btn-confirm {
+    background: linear-gradient(135deg, #ef4444, #dc2626);
+    color: white;
+    box-shadow: 0 4px 12px rgba(239, 68, 68, 0.3);
+}
+
+.btn-confirm:hover {
+    transform: translateY(-1px);
+    box-shadow: 0 6px 16px rgba(239, 68, 68, 0.4);
+}
+
+@keyframes fadeIn {
+    from {
+        opacity: 0;
+    }
+
+    to {
+        opacity: 1;
+    }
+}
+
+@keyframes slideUp {
+    from {
+        transform: translateY(20px);
+        opacity: 0;
+    }
+
+    to {
+        transform: translateY(0);
+        opacity: 1;
+    }
+}
+
+@media (max-width: 768px) {
+    .confirm-dialog {
+        max-width: 90%;
+    }
+}

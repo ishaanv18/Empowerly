@@ -1,0 +1,167 @@
+.admin-settings-container {
+    padding: 2rem;
+    max-width: 1400px;
+    margin: 0 auto;
+}
+
+.admin-settings-container h1 {
+    font-size: 2rem;
+    color: var(--text-primary);
+    margin-bottom: 2rem;
+}
+
+.tabs {
+    display: flex;
+    gap: 0.5rem;
+    margin-bottom: 2rem;
+    border-bottom: 2px solid var(--border);
+}
+
+.tab {
+    padding: 1rem 2rem;
+    border: none;
+    background: none;
+    color: var(--text-secondary);
+    font-weight: 600;
+    cursor: pointer;
+    border-bottom: 3px solid transparent;
+    transition: all 0.2s;
+}
+
+.tab:hover {
+    color: var(--text-primary);
+}
+
+.tab.active {
+    color: #667eea;
+    border-bottom-color: #667eea;
+}
+
+.tab-content {
+    background: var(--surface);
+    border-radius: var(--radius-xl);
+    padding: 2rem;
+}
+
+.tab-content h2 {
+    font-size: 1.5rem;
+    color: var(--text-primary);
+    margin: 0 0 1.5rem 0;
+}
+
+.reviews-table,
+.cycles-table {
+    overflow-x: auto;
+}
+
+table {
+    width: 100%;
+    border-collapse: collapse;
+}
+
+thead {
+    background: var(--background);
+}
+
+th {
+    padding: 1rem;
+    text-align: left;
+    font-weight: 600;
+    color: var(--text-primary);
+    border-bottom: 2px solid var(--border);
+}
+
+td {
+    padding: 1rem;
+    border-bottom: 1px solid var(--border);
+    color: var(--text-secondary);
+}
+
+tr:hover {
+    background: var(--background);
+}
+
+.stats-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    gap: 1.5rem;
+    margin-bottom: 2rem;
+}
+
+.stat-card {
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    padding: 2rem;
+    border-radius: var(--radius-lg);
+    text-align: center;
+    color: white;
+}
+
+.stat-value {
+    font-size: 3rem;
+    font-weight: 700;
+    margin-bottom: 0.5rem;
+}
+
+.stat-label {
+    font-size: 1rem;
+    opacity: 0.9;
+}
+
+.average-scores {
+    background: var(--background);
+    padding: 1.5rem;
+    border-radius: var(--radius-lg);
+}
+
+.average-scores h3 {
+    font-size: 1.25rem;
+    color: var(--text-primary);
+    margin: 0 0 1rem 0;
+}
+
+.scores-list {
+    display: grid;
+    gap: 1rem;
+}
+
+.score-item {
+    display: flex;
+    justify-content: space-between;
+    padding: 1rem;
+    background: var(--surface);
+    border-radius: var(--radius-md);
+}
+
+.score-item strong {
+    color: #10b981;
+    font-size: 1.25rem;
+}
+
+@media (max-width: 768px) {
+    .admin-settings-container {
+        padding: 1rem;
+    }
+
+    .tabs {
+        flex-direction: column;
+    }
+
+    .tab {
+        border-bottom: none;
+        border-left: 3px solid transparent;
+    }
+
+    .tab.active {
+        border-left-color: #667eea;
+        border-bottom-color: transparent;
+    }
+
+    table {
+        font-size: 0.875rem;
+    }
+
+    th,
+    td {
+        padding: 0.75rem 0.5rem;
+    }
+}

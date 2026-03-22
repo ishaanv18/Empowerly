@@ -1,0 +1,266 @@
+package com.empowerly.service;
+
+import com.empowerly.config.JwtUtil;
+import com.empowerly.dto.*;
+import com.empowerly.model.OTP;
+import com.empowerly.model.User;
+import com.empowerly.repository.OTPRepository;
+import com.empowerly.repository.UserRepository;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.security.crypto.password.PasswordEncoder;
+import org.springframework.stereotype.Service;
+import org.springframework.transaction.annotation.Transactional;
+
+import java.time.LocalDateTime;
+import java.util.Map;
+import java.util.Optional;
+import java.util.Random;
+
+@Service
+public class AuthService {
+
+    private static final Logger logger = LoggerFactory.getLogger(AuthService.class);
+
+    @Autowired
+    private UserRepository userRepository;
+
+    @Autowired
+    private OTPRepository otpRepository;
+
+    @Autowired
+    private EmailService emailService;
+
+    @Autowired
+    private PasswordEncoder passwordEncoder;
+
+    @Autowired
+    private JwtUtil jwtUtil;
+
+    @Autowired
+    private AuditLogService auditLogService;
+
+    @Transactional
+    public String signup(SignupRequest request) {
+        // Check if user already exists
+        if (userRepository.existsByEmail(request.getEmail())) {
+            throw new RuntimeException("Email already registered");
+        }
+
+        // Create unverified user
+        User user = new User();
+        user.setName(request.getName());
+        user.setEmail(request.getEmail());
+        user.setPassword(passwordEncoder.encode(request.getPassword()));
+        user.setDateOfBirth(request.getDateOfBirth());
+        user.setDepartment(request.getDepartment());
+        user.setRole(request.getRole());
+        user.setVerified(false);
+        user.setActive(true);
+
+        userRepository.save(user);
+        logger.info("User created (unverified): {}", user.getEmail());
+
+        // Log audit trail
+        auditLogService.logAction(
+                user.getId(),
+                "REGISTER",
+                "USER",
+                user.getId(),
+                "User registered: " + user.getEmail(),
+                Map.of("email", user.getEmail(), "department", user.getDepartment().toString(), "role",
+                        user.getRole().toString()),
+                null,
+                null);
+
+        // Generate and send OTP
+        String otpCode = generateOTP();
+        saveOTP(request.getEmail(), otpCode);
+
+        boolean emailSent = emailService.sendOTPEmail(request.getEmail(), otpCode, request.getName());
+
+        if (!emailSent) {
+            throw new RuntimeException("Failed to send OTP email. Please try again.");
+        }
+
+        return "Signup successful! Please check your email for OTP verification.";
+    }
+
+    @Transactional
+    public AuthResponse verifyOTP(OTPVerificationRequest request) {
+        // Find OTP record
+        Optional<OTP> otpOptional = otpRepository.findByEmailAndOtpCode(request.getEmail(), request.getOtp());
+
+        if (otpOptional.isEmpty()) {
+            throw new RuntimeException("Invalid OTP");
+        }
+
+        OTP otp = otpOptional.get();
+
+        // Check if OTP is expired (handled by MongoDB TTL, but double-check)
+        if (otp.getCreatedAt().plusMinutes(5).isBefore(LocalDateTime.now())) {
+            throw new RuntimeException("OTP has expired");
+        }
+
+        // Find user and mark as verified
+        User user = userRepository.findByEmail(request.getEmail())
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        user.setVerified(true);
+        userRepository.save(user);
+
+        // Delete OTP record
+        otpRepository.delete(otp);
+
+        logger.info("User verified successfully: {}", user.getEmail());
+
+        // Log audit trail
+        auditLogService.logAction(
+                user.getId(),
+                "OTP_VERIFY",
+                "USER",
+                user.getId(),
+                "User verified OTP: " + user.getEmail(),
+                Map.of("email", user.getEmail()),
+                null,
+                null);
+
+        // Generate JWT token
+        String token = jwtUtil.generateToken(user.getEmail(), user.getId(), user.getRole().name());
+
+        return new AuthResponse(token, user.getId(), user.getName(), user.getEmail(),
+                user.getRole(), user.getDepartment());
+    }
+
+    public AuthResponse login(LoginRequest request) {
+        try {
+            User user = userRepository.findByEmail(request.getEmail())
+                    .orElseThrow(() -> new RuntimeException("Invalid email or password"));
+
+            if (!user.isVerified()) {
+                // Log failed login attempt
+                auditLogService.logAction(
+                        user.getId(),
+                        "LOGIN",
+                        "USER",
+                        user.getId(),
+                        "Failed login attempt: Email not verified",
+                        Map.of("email", request.getEmail(), "reason", "Email not verified"),
+                        null,
+                        null,
+                        "FAILURE",
+                        "Email not verified");
+                throw new RuntimeException("Please verify your email first");
+            }
+
+            if (!passwordEncoder.matches(request.getPassword(), user.getPassword())) {
+                // Log failed login attempt
+                auditLogService.logAction(
+                        user.getId(),
+                        "LOGIN",
+                        "USER",
+                        user.getId(),
+                        "Failed login attempt: Invalid password",
+                        Map.of("email", request.getEmail(), "reason", "Invalid password"),
+                        null,
+                        null,
+                        "FAILURE",
+                        "Invalid password");
+                throw new RuntimeException("Invalid email or password");
+            }
+
+            if (!user.isActive()) {
+                // Log failed login attempt
+                auditLogService.logAction(
+                        user.getId(),
+                        "LOGIN",
+                        "USER",
+                        user.getId(),
+                        "Failed login attempt: Account deactivated",
+                        Map.of("email", request.getEmail(), "reason", "Account deactivated"),
+                        null,
+                        null,
+                        "FAILURE",
+                        "Account deactivated");
+                throw new RuntimeException("Account is deactivated");
+            }
+
+            String token = jwtUtil.generateToken(user.getEmail(), user.getId(), user.getRole().name());
+
+            logger.info("User logged in successfully: {}", user.getEmail());
+
+            // Log successful login
+            auditLogService.logAction(
+                    user.getId(),
+                    "LOGIN",
+                    "USER",
+                    user.getId(),
+                    "User logged in: " + user.getEmail(),
+                    Map.of("email", user.getEmail(), "role", user.getRole().toString()),
+                    null,
+                    null);
+
+            return new AuthResponse(token, user.getId(), user.getName(), user.getEmail(),
+                    user.getRole(), user.getDepartment());
+        } catch (RuntimeException e) {
+            // If user not found, log with null userId
+            if (e.getMessage().equals("Invalid email or password")) {
+                auditLogService.logAction(
+                        "UNKNOWN",
+                        "LOGIN",
+                        "USER",
+                        null,
+                        "Failed login attempt: User not found",
+                        Map.of("email", request.getEmail(), "reason", "User not found"),
+                        null,
+                        null,
+                        "FAILURE",
+                        "User not found");
+            }
+            throw e;
+        }
+    }
+
+    @Transactional
+    public String resendOTP(String email) {
+        User user = userRepository.findByEmail(email)
+                .orElseThrow(() -> new RuntimeException("User not found"));
+
+        if (user.isVerified()) {
+            throw new RuntimeException("User is already verified");
+        }
+
+        // Delete old OTP if exists
+        otpRepository.findByEmail(email).ifPresent(otpRepository::delete);
+
+        // Generate and send new OTP
+        String otpCode = generateOTP();
+        saveOTP(email, otpCode);
+
+        boolean emailSent = emailService.sendOTPEmail(email, otpCode, user.getName());
+
+        if (!emailSent) {
+            throw new RuntimeException("Failed to send OTP email. Please try again.");
+        }
+
+        return "OTP resent successfully!";
+    }
+
+    private String generateOTP() {
+        Random random = new Random();
+        int otp = 100000 + random.nextInt(900000);
+        return String.valueOf(otp);
+    }
+
+    private void saveOTP(String email, String otpCode) {
+        OTP otp = new OTP();
+        otp.setEmail(email);
+        otp.setOtpCode(otpCode);
+        otp.setCreatedAt(LocalDateTime.now());
+        otp.setVerified(false);
+
+        otpRepository.save(otp);
+        logger.info("OTP generated for: {}", email);
+    }
+}

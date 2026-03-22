@@ -1,0 +1,215 @@
+.participant-panel {
+    background: #2a2a2a;
+    border-left: 1px solid #3a3a3a;
+    display: flex;
+    flex-direction: column;
+    height: 100%;
+}
+
+.panel-header {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 1rem;
+    border-bottom: 1px solid #3a3a3a;
+}
+
+.panel-header h3 {
+    margin: 0;
+    font-size: 1.125rem;
+    color: white;
+}
+
+.add-btn {
+    padding: 0.5rem 1rem;
+    border-radius: 8px;
+    border: none;
+    background: #4f46e5;
+    color: white;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background 0.2s;
+}
+
+.add-btn:hover:not(:disabled) {
+    background: #4338ca;
+}
+
+.add-btn:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.participants-list {
+    flex: 1;
+    overflow-y: auto;
+    padding: 1rem;
+}
+
+.participant-item {
+    display: flex;
+    align-items: center;
+    gap: 0.75rem;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background: #3a3a3a;
+    border-radius: 8px;
+}
+
+.participant-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    background: linear-gradient(135deg, #667eea 0%, #764ba2 100%);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+    font-weight: bold;
+    font-size: 1.125rem;
+}
+
+.participant-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 0.25rem;
+}
+
+.participant-name {
+    color: white;
+    font-weight: 500;
+}
+
+.participant-status {
+    font-size: 0.75rem;
+    padding: 0.125rem 0.5rem;
+    border-radius: 12px;
+    width: fit-content;
+}
+
+.status-invited {
+    background: #3b82f6;
+    color: white;
+}
+
+.status-joined {
+    background: #10b981;
+    color: white;
+}
+
+.status-left {
+    background: #6b7280;
+    color: white;
+}
+
+/* Modal */
+.modal-overlay {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.7);
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1000;
+}
+
+.modal-content {
+    background: #2a2a2a;
+    border-radius: 12px;
+    padding: 1.5rem;
+    max-width: 400px;
+    width: 90%;
+    max-height: 80vh;
+    display: flex;
+    flex-direction: column;
+}
+
+.modal-content h3 {
+    margin: 0 0 1rem 0;
+    color: white;
+}
+
+.user-select-list {
+    flex: 1;
+    overflow-y: auto;
+    margin-bottom: 1rem;
+}
+
+.no-users {
+    text-align: center;
+    color: #888;
+    padding: 2rem;
+}
+
+.user-select-item {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 0.75rem;
+    margin-bottom: 0.5rem;
+    background: #3a3a3a;
+    border-radius: 8px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.user-select-item:hover {
+    background: #4a4a4a;
+}
+
+.user-select-item.selected {
+    background: #4f46e5;
+    color: white;
+}
+
+.user-dept {
+    font-size: 0.875rem;
+    color: #888;
+}
+
+.user-select-item.selected .user-dept {
+    color: rgba(255, 255, 255, 0.7);
+}
+
+.modal-actions {
+    display: flex;
+    gap: 0.75rem;
+    justify-content: flex-end;
+}
+
+.btn-primary,
+.btn-secondary {
+    padding: 0.75rem 1.5rem;
+    border-radius: 8px;
+    border: none;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.btn-primary {
+    background: #4f46e5;
+    color: white;
+}
+
+.btn-primary:hover:not(:disabled) {
+    background: #4338ca;
+}
+
+.btn-primary:disabled {
+    opacity: 0.5;
+    cursor: not-allowed;
+}
+
+.btn-secondary {
+    background: #3a3a3a;
+    color: white;
+}
+
+.btn-secondary:hover {
+    background: #4a4a4a;
+}
