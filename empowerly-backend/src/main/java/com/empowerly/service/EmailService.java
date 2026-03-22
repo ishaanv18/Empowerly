@@ -1,24 +1,41 @@
 package com.empowerly.service;
 
-import com.resend.Resend;
-import com.resend.core.exception.ResendException;
-import com.resend.services.emails.model.CreateEmailOptions;
-import com.resend.services.emails.model.CreateEmailResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
+import sendinblue.ApiClient;
+import sendinblue.ApiException;
+import sendinblue.Configuration;
+import sendinblue.auth.ApiKeyAuth;
+import sibApi.TransactionalEmailsApi;
+import sibModel.CreateSmtpEmail;
+import sibModel.SendSmtpEmail;
+import sibModel.SendSmtpEmailSender;
+import sibModel.SendSmtpEmailTo;
+
+import java.util.List;
 
 @Service
 public class EmailService {
 
     private static final Logger logger = LoggerFactory.getLogger(EmailService.class);
 
-    @Value("${resend.api.key}")
-    private String resendApiKey;
+    @Value("${brevo.api.key}")
+    private String brevoApiKey;
 
-    @Value("${resend.from.email}")
+    @Value("${brevo.from.email}")
     private String fromEmail;
+
+    @Value("${brevo.from.name}")
+    private String fromName;
+
+    private TransactionalEmailsApi getApi() {
+        ApiClient client = Configuration.getDefaultApiClient();
+        ApiKeyAuth auth = (ApiKeyAuth) client.getAuthentication("api-key");
+        auth.setApiKey(brevoApiKey);
+        return new TransactionalEmailsApi();
+    }
 
     public boolean sendOTPEmail(String toEmail, String otpCode, String userName) {
         String subject = "Empowerly - Verify Your Account";
@@ -27,21 +44,27 @@ public class EmailService {
     }
 
     public boolean sendEmail(String toEmail, String subject, String htmlContent) {
-        Resend resend = new Resend(resendApiKey);
-
-        CreateEmailOptions params = CreateEmailOptions.builder()
-                .from(fromEmail)
-                .to(toEmail)
-                .subject(subject)
-                .html(htmlContent)
-                .build();
-
         try {
-            CreateEmailResponse response = resend.emails().send(params);
-            logger.info("Email sent successfully to: {}. Resend ID: {}", toEmail, response.getId());
+            TransactionalEmailsApi api = getApi();
+
+            SendSmtpEmailSender sender = new SendSmtpEmailSender();
+            sender.setEmail(fromEmail);
+            sender.setName(fromName);
+
+            SendSmtpEmailTo recipient = new SendSmtpEmailTo();
+            recipient.setEmail(toEmail);
+
+            SendSmtpEmail email = new SendSmtpEmail();
+            email.setSender(sender);
+            email.setTo(List.of(recipient));
+            email.setSubject(subject);
+            email.setHtmlContent(htmlContent);
+
+            CreateSmtpEmail result = api.sendTransacEmail(email);
+            logger.info("Email sent successfully to: {}. Message ID: {}", toEmail, result.getMessageId());
             return true;
-        } catch (ResendException ex) {
-            logger.error("Failed to send email to: {}. Error: {}", toEmail, ex.getMessage());
+        } catch (ApiException ex) {
+            logger.error("Failed to send email to: {}. Status: {}, Error: {}", toEmail, ex.getCode(), ex.getResponseBody());
             return false;
         }
     }
@@ -72,14 +95,8 @@ public class EmailService {
                             padding: 30px;
                             text-align: center;
                         }
-                        .header h1 {
-                            margin: 0;
-                            font-size: 28px;
-                        }
-                        .content {
-                            padding: 40px 30px;
-                            text-align: center;
-                        }
+                        .header h1 { margin: 0; font-size: 28px; }
+                        .content { padding: 40px 30px; text-align: center; }
                         .otp-box {
                             background-color: #f8fafc;
                             border: 2px dashed #6366f1;
@@ -105,31 +122,26 @@ public class EmailService {
                 </head>
                 <body>
                     <div class="container">
-                        <div class="header">
-                            <h1>🚀 Empowerly</h1>
-                        </div>
+                        <div class="header"><h1>🚀 Empowerly</h1></div>
                         <div class="content">
-                            <h2>Welcome, """ + userName
-                + """
+                            <h2>Welcome, """ + userName + """
                         !</h2>
-                                            <p>Thank you for signing up with Empowerly. To complete your registration, please use the following OTP:</p>
-                                            <div class="otp-box">
-                                                <p style="margin: 0; color: #64748b;">Your verification code</p>
-                                                <div class="otp-code">"""
-                + otpCode
-                + """
+                            <p>Thank you for signing up with Empowerly. To complete your registration, please use the following OTP:</p>
+                            <div class="otp-box">
+                                <p style="margin: 0; color: #64748b;">Your verification code</p>
+                                <div class="otp-code">""" + otpCode + """
+                                </div>
+                                <p style="margin: 0; color: #64748b; font-size: 12px;">This code will expire in 5 minutes</p>
+                            </div>
+                            <p>If you didn't request this code, please ignore this email.</p>
                         </div>
-                                                <p style="margin: 0; color: #64748b; font-size: 12px;">This code will expire in 5 minutes</p>
-                                            </div>
-                                            <p>If you didn't request this code, please ignore this email.</p>
-                                        </div>
-                                        <div class="footer">
-                                            <p>© 2025 Empowerly. All rights reserved.</p>
-                                            <p>This is an automated email, please do not reply.</p>
-                                        </div>
-                                    </div>
-                                </body>
-                                </html>
-                                """;
+                        <div class="footer">
+                            <p>© 2025 Empowerly. All rights reserved.</p>
+                            <p>This is an automated email, please do not reply.</p>
+                        </div>
+                    </div>
+                </body>
+                </html>
+                """;
     }
 }
