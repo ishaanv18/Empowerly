@@ -46,6 +46,9 @@
   <a href="#-api-documentation">
     <img src="https://img.shields.io/badge/📖-API_Docs-purple?style=for-the-badge" alt="API Docs" />
   </a>
+  <a href="#-product-management">
+    <img src="https://img.shields.io/badge/📊-PRD-ff69b4?style=for-the-badge" alt="PRD" />
+  </a>
 </p>
 
 ---
@@ -129,6 +132,7 @@
 - [API Documentation](#-api-documentation)
 - [Security Features](#-security-features)
 - [AI Integration](#-ai-integration)
+- [Product Management](#-product-management)
 - [Contributing](#-contributing)
 - [License](#-license)
 
@@ -1170,6 +1174,15 @@ public class ChatbotService {
     }
 }
 ```
+
+---
+
+## 📊 Product Management
+
+The product strategy and detailed requirements for Empowerly are fully documented in our comprehensive **Product Requirements Document (PRD)**. This document covers user personas, market analysis, feature specifications, go-to-market strategies, and OKRs.
+
+- 📄 **View the comprehensive PRD on Notion:** [Empowerly Product Requirements Document](https://www.notion.so/Empowerly-Product-Requirements-Document-35de0b2be0e180b08829e7075531f230?source=copy_link)
+- 📝 A detailed Markdown version is also available in the repository: [`PRODUCT_MANAGEMENT.md`](PRODUCT_MANAGEMENT.md)
 
 ---
 
